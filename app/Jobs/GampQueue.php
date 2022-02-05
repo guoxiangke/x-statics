@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Irazasyed\LaravelGAMP\Facades\GAMP;
+use Illuminate\Support\Facades\Log;
 
 class GampQueue implements ShouldQueue
 {
