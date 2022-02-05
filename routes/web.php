@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Jobs\GampQueue;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
