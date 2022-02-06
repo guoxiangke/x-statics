@@ -27,9 +27,13 @@ Route::get('/redirect', function (Request $request) {
     $headers = ['referer' => $target];
     // https://divinglaravel.com/running-a-task-after-the-response-is-sent
     // https://dev.to/webong/execute-an-action-after-laravel-returns-response-4pjc
-    $ip = $request->header('x-forwarded-for')??$request->ip();
-    $basename = basename($target); //cc201221.mp3
+    $ip = $request->query('ip');
+    if(!$ip){
+        $ip = $request->header('x-forwarded-for')??$request->ip();
+    }
+    // $basename = basename($target); //cc201221.mp3
     $parts = parse_url($target); //$parts['host']
-    GampQueue::dispatchAfterResponse($ip, $parts['host'], $basename, 'redirect');
+    $paths = pathinfo($target); //mp3
+    GampQueue::dispatchAfterResponse($ip, $parts['host'], $paths['filename'], $paths['extension']);
     return redirect()->away($target, $status, $headers);
 });
