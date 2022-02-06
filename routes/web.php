@@ -19,7 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/ip', function () {
+Route::get('/ip', function (Request $request) {
     $ip = $request->header('x-forwarded-for')??$request->ip();
     return [$ip];
 });
