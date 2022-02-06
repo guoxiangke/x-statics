@@ -19,6 +19,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/ip', function () {
+    $ip = $request->header('x-forwarded-for')??$request->ip();
+    return [$ip];
+});
 // https://laravel.com/api/8.x/Illuminate/Routing/Redirector.html#method_away
     // Redirect::away(
 Route::get('/redirect', function (Request $request) {
@@ -27,10 +31,8 @@ Route::get('/redirect', function (Request $request) {
     $headers = ['referer' => $target];
     // https://divinglaravel.com/running-a-task-after-the-response-is-sent
     // https://dev.to/webong/execute-an-action-after-laravel-returns-response-4pjc
-    $ip = $request->query('ip');
-    if(!$ip){
-        $ip = $request->header('x-forwarded-for')??$request->ip();
-    }
+    // $ip = $request->query('ip');
+    $ip = $request->header('x-forwarded-for')??$request->ip();
     // $basename = basename($target); //cc201221.mp3
     $parts = parse_url($target); //$parts['host']
     $paths = pathinfo($target); //mp3
