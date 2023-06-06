@@ -37,14 +37,11 @@ Route::get('/redirect', function (Request $request) {
     $url = strtok($url, '?'); //remove ?q=xxx
     $target = basename($url); //cc201221.mp3
     
-    $data = [];
-    if(isset($parts['query'])) parse_str($parts['query'], $data);
-    
-    // measurement/metric
-    if(!isset($data['metric'])) $data['metric'] = 'connect'; // ly-wechat
-    // $tags = http_build_query($data, '', ',');// category=603,bot=4
-    $tags = $data;
+    $tags = [];
+    if(isset($parts['query'])) parse_str($parts['query'], $tags);
     $tags['host'] = $parts['host'];
+    // measurement/metric
+    // $tags = http_build_query($data, '', ',');// category=603,bot=4    
 
     $fields = [];
     $fields['count'] = 1;
@@ -53,7 +50,7 @@ Route::get('/redirect', function (Request $request) {
     // $fields = http_build_query($fields, '', ',');// category=603,bot=4
     
     $protocolLine = [
-        'name' => $data['metric'],
+        'name' => 'click', //action=click/listen/view/tap
         'tags' => $tags,
         'fields' => $fields
     ];
