@@ -49,6 +49,13 @@ Route::get('/redirect', function (Request $request) {
     $fields['ip'] = $ip;
     // $fields = http_build_query($fields, '', ',');// category=603,bot=4
     
+    // 原始获取人！
+    // $url .= '%26to='.$to; //unset(to) => Field[to]=wxid;
+    if(isset($tags['to'])) {
+        $fields['to'] = $tags['to'];
+        unset($tags['to']);
+    }
+
     $protocolLine = [
         'name' => 'click', //action=click/listen/view/tap
         'tags' => $tags,
