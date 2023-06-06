@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Jobs\GampQueue;
 use Illuminate\Http\Request;
+use App\Jobs\InfluxQueue;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,19 +24,31 @@ Route::get('/ip', function (Request $request) {
     $ip = $request->header('x-forwarded-for')??$request->ip();
     return [$ip];
 });
-// https://laravel.com/api/8.x/Illuminate/Routing/Redirector.html#method_away
-    // Redirect::away(
+// http://127.0.0.1:8000/redirect?target=https://*.com/@fwdforward/7XFVL5o.m4a?metric=connect%26category=601%26bot=4
+// metric:默认是connect 收听/看/点击链接
+// by：author 可选 %26author=@fwdforward
 Route::get('/redirect', function (Request $request) {
-    $target = $request->query('target');
+    $url = $request->query('target');
     $status = 302;
-    $headers = ['referer' => $target];
-    // https://divinglaravel.com/running-a-task-after-the-response-is-sent
-    // https://dev.to/webong/execute-an-action-after-laravel-returns-response-4pjc
-    // $ip = $request->query('ip');
+    $headers = ['referer' => $url];
     $ip = $request->header('x-forwarded-for')??$request->ip();
-    // $basename = basename($target); //cc201221.mp3
-    $parts = parse_url($target); //$parts['host']
-    $paths = pathinfo($target); //mp3
-    GampQueue::dispatchAfterResponse($ip, $parts['host'], $paths['filename'], $paths['extension']);
-    return redirect()->away($target, $status, $headers);
+    $parts = parse_url($url); //$parts['host']
+    // $paths = pathinfo($url); //mp3
+    $url = strtok($url, '?'); //remove ?q=xxx
+    $target = basename($url); //cc201221.mp3
+    
+    $data = [];
+    if(isset($parts['query'])) parse_str($parts['query'], $data);
+    
+    // measurement/metric
+    if(!isset($data['metric'])) $data['metric'] = 'connect';
+    $metric = $data['metric'].",";unset($data['metric']); // ly-wechat
+    $tags = http_build_query($data, '', ',');// category=603,bot=4
+
+    $protocolLine = $metric.$tags.' count=1i,target="'.$target.'",ip="'.$ip.'"';
+    // ly-listen,category=603,bot=%E5%8F%8B4count=1i,target="ee230909.mp3"
+    // TODO Statistics BY IP / BY target.
+    // dd($protocolLine,$parts,$url,$ip);
+    InfluxQueue::dispatchAfterResponse($protocolLine);
+    return redirect()->away($url, $status, $headers);
 });
