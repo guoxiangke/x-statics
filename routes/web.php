@@ -41,8 +41,7 @@ Route::get('/redirect', function (Request $request) {
     if(isset($parts['query'])) parse_str($parts['query'], $data);
     
     // measurement/metric
-    if(!isset($data['metric'])) $data['metric'] = 'connect';
-    $metric = $data['metric'].",";unset($data['metric']); // ly-wechat
+    if(!isset($data['metric'])) $data['metric'] = 'connect'; // ly-wechat
     // $tags = http_build_query($data, '', ',');// category=603,bot=4
     $tags = $data;
     $tags['host'] = $parts['host'];
@@ -54,7 +53,7 @@ Route::get('/redirect', function (Request $request) {
     // $fields = http_build_query($fields, '', ',');// category=603,bot=4
     
     $protocolLine = [
-        'name' => $metric,
+        'name' => $data['metric'],
         'tags' => $tags,
         'fields' => $fields
     ];
