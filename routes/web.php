@@ -55,6 +55,8 @@ Route::get('/redirect', function (Request $request) {
         $fields['to'] = $tags['to'];
         unset($tags['to']);
     }
+    // ?_=1
+    if(isset($tags['_'])) unset($tags['_']);
 
     $protocolLine = [
         'name' => 'click', //action=click/listen/view/tap
